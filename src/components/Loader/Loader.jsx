@@ -14,5 +14,5 @@ export default function Loader () {
                 wrapperClass="dna-wrapper"
             />
         </>
-    )
+    ) 
 }

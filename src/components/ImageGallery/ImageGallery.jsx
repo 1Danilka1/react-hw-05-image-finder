@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import Button from 'components/Button/Button';
-// import Loader from 'components/Loader/Loader';
+import Loader from 'components/Loader/Loader';
 import c from './ImageGallery.module.css'
 
 export default class ImageGallery extends Component {
@@ -12,7 +12,8 @@ export default class ImageGallery extends Component {
     page: 1,
     per_page: 12,
     total: 0,
-    // loader: 'active',
+    loader: false,
+    // status:'idle', 
   };
 
   fetch = () => {
@@ -40,6 +41,7 @@ export default class ImageGallery extends Component {
             }
             else {
                 return this.setState({
+                    loader: false,
                     images:images.hits,
                     total: images.totalHits,
                 })
@@ -47,7 +49,8 @@ export default class ImageGallery extends Component {
             }
           )
           .catch(error => this.setState({ error }))
-      },1000)
+          .finally(() => this.setState({ laoder: false })) 
+      },200)
   }
 
   downScroll = () => {
@@ -69,12 +72,12 @@ export default class ImageGallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchImage !== this.props.searchImage) {
-      // this.setState({loader:'noActive',})
+      this.setState({loader:true,})
       this.reset()
       this.fetch(this.props.searchImage)
     }
     if (prevState.page !== this.state.page) {
-      // this.setState({loader:'noActive',})
+      // this.setState({loader:true,})
       this.fetch(this.props.searchImage)
     }
   }
@@ -86,9 +89,6 @@ export default class ImageGallery extends Component {
   render() {
     return (
       <>
-      {/* {
-        this.loader !== 'active' && <Loader />
-      } */}
         <ul className={c.ul_item}>
           {this.state.images.map(image => (
           <ImageGalleryItem imgDeafault={image.webformatURL} key={image.id} imgTag={image.tags} imageModal={image.largeImageURL}/>
@@ -98,6 +98,9 @@ export default class ImageGallery extends Component {
         {
           this.state.total > this.state.images.length && (<div><Button onClick={this.addPage} /></div>)
         }  
+        {
+          this.state.loader && <Loader />
+        }
       </>
     )
   }
